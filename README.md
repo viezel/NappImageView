@@ -32,8 +32,30 @@ var imageView = NappImageView.createImageView({
 win.add(imageView);
 ```
 
+### Another example
+
+Using a local image path
+
+```javascript
+var NappImageView = require('dk.napp.imageview');
+
+var imageView = NappImageView.createImageView({
+	height : Ti.UI.FILL,
+	width : Ti.UI.FILL,
+	contentMode : 'aspectfit',
+	image : "/images/background.png"
+});
+win.add(imageView);
+```
+
 
 ## Changelog
+
+**v1.0.2**
+Added support for local image path 
+
+**v1.0.1**
+Added 64 bit support  
  
 **v1.0**
 Initial implementation. 
