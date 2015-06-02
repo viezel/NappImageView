@@ -41,8 +41,16 @@
     //cancel loading previous image
     [[AsyncImageLoader sharedLoader] cancelLoadingImagesForTarget:imageView];
     
-    // add new url
-    imageView.imageURL = [NSURL URLWithString:[TiUtils stringValue:args]];
+    NSString *url = [TiUtils stringValue:args];
+    
+    if([self validateUrl:url]){
+        // add new url
+        imageView.imageURL = [NSURL URLWithString:[TiUtils stringValue:args]];
+    } else {
+        // local
+        imageView.image = [self findImage:url];
+    }
+    
 }
 
 -(void)setContentMode_:(id)args
