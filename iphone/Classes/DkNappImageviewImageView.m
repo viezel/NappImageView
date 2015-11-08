@@ -22,8 +22,22 @@
         imageView.contentMode = UIViewContentModeScaleAspectFill;
         imageView.clipsToBounds = YES;
         [imageView setAutoresizingMask:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(imageFailed:)
+                                                     name:AsyncImageLoadDidFail
+                                                   object:nil];
+        
         [self addSubview:imageView];
     }
+}
+
+- (void)imageFailed:(NSNotification *)notification
+{
+    NSURL *URL = (notification.userInfo)[AsyncImageURLKey];
+    [self configureDefaultImage];
+    [[AsyncImageLoader sharedLoader] cancelLoadingURL:URL];
+    NSLog(@"[WARN] NappImageView :: WARN :: Loading image failed: %@", [URL absoluteString]);
 }
 
 -(void)frameSizeChanged:(CGRect)frame bounds:(CGRect)bounds
@@ -44,6 +58,7 @@
     NSString *url = [TiUtils stringValue:args];
     
     if([self validateUrl:url]){
+        
         // add new url
         imageView.imageURL = [NSURL URLWithString:[TiUtils stringValue:args]];
     } else {
@@ -55,21 +70,31 @@
 
 -(void)setContentMode_:(id)args
 {
-    NSString * modestr = [TiUtils stringValue:args];
-    if ([@"aspectfit" isEqualToString:modestr]) {
-        contentMode = UIViewContentModeScaleAspectFit;
-    }
-    else if ([@"aspectfill" isEqualToString:modestr]) {
-        contentMode = UIViewContentModeScaleAspectFill;
-    }
-    else if ([@"center" isEqualToString:modestr]) {
-        contentMode = UIViewContentModeCenter;
-    }
-    else {
-        contentMode = UIViewContentModeScaleAspectFit;
+    // Keeping the old way there for legacy reasons. Should be removed in the next release.
+    if([args isKindOfClass:[NSString class]]) {
+        NSLog(@"[WARN] NappImageView :: WARN :: The string argument for 'contentMode' is deprecated. Please use one of the CONTENT_MODE_* constants instead.");
+        
+        NSString * modestr = [TiUtils stringValue:args];
+        if ([@"aspectfit" isEqualToString:modestr]) {
+            contentMode = UIViewContentModeScaleAspectFit;
+        }
+        else if ([@"aspectfill" isEqualToString:modestr]) {
+            contentMode = UIViewContentModeScaleAspectFill;
+        }
+        else if ([@"center" isEqualToString:modestr]) {
+            contentMode = UIViewContentModeCenter;
+        }
+        else {
+            contentMode = UIViewContentModeScaleAspectFit;
+        }
+        
+        [imageView setContentMode:contentMode];
+        return;
     }
     
-    imageView.contentMode = contentMode;
+    ENSURE_TYPE(args, NSNumber);
+    
+    [imageView setContentMode:[TiUtils intValue:args def:UIViewContentModeScaleAspectFit]];
 }
 
 -(void)setClipsToBounds_:(id)clips {
@@ -116,9 +141,27 @@
         if(image != nil){
             return image;
         }
-        NSLog(@"NappImageView :: ERROR :: image not found");
+        
+        [self configureDefaultImage];
     }
     return nil;
+}
+
+-(void)configureDefaultImage
+{
+    NSURL *defURL = [TiUtils toURL:[self.proxy valueForKey:@"defaultImage"] proxy:self.proxy];
+    
+    if (defURL == nil && ![TiUtils boolValue:[self.proxy valueForKey:@"preventDefaultImage"] def:NO])
+    {	//This is a special case, because it IS built into the bundle despite being in the simulator.
+        NSString * filePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"modules/ui/images/photoDefault.png"];
+        defURL = [NSURL fileURLWithPath:filePath];
+    }
+    
+    if (defURL != nil) {
+        [imageView setImageURL:defURL];
+    } else {
+        // Image failed and no default image existing.
+    }
 }
 
 
