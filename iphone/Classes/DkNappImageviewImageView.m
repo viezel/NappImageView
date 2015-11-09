@@ -116,6 +116,18 @@
     if(imagePath != nil){
         UIImage *image = nil;
         
+        //image from URL
+        image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:imagePath]]];
+        if(image != nil){
+            return image;
+        }
+        
+        //load remote image
+        image = [UIImage imageWithContentsOfFile:imagePath];
+        if(image != nil){
+            return image;
+        }
+        
         // Load the image from the application assets
         NSString *fileNamePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:imagePath];;
         image = [UIImage imageWithContentsOfFile:fileNamePath];
@@ -126,18 +138,6 @@
         //Load local image by extracting the filename without extension
         NSString* newImagePath = [[imagePath lastPathComponent] stringByDeletingPathExtension];
         image = [UIImage imageNamed:newImagePath];
-        if(image != nil){
-            return image;
-        }
-        
-        //image from URL
-        image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:imagePath]]];
-        if(image != nil){
-            return image;
-        }
-        
-        //load remote image
-        image = [UIImage imageWithContentsOfFile:imagePath];
         if(image != nil){
             return image;
         }
