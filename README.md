@@ -3,7 +3,11 @@
 ## Description
 
 The Napp imageView Module extends the Appcelerator Titanium Mobile framework. 
-It exposes the iOS UIViewContentMode for imageView - supporting fill, fit and center modes. 
+It exposes all iOS `UIViewContentMode` constants for the imageView by seeting the property `contentMode`. 
+
+You can also set the `defaultImage` property to show a fallback image in case the (remote) image does not load. 
+If you don't want to show the system default image on fail, you can set the `preventDefaultImage` property 
+to `true` to disable the system default image.
 
 It also uses AsyncImageView https://github.com/nicklockwood/AsyncImageView for loading the image async.
 
@@ -16,8 +20,23 @@ Go to the `dist` folder. It has the newest version of the module.
 
 ### ContentMode
 
-Supporting: `aspectfill` `aspectfit` `center`
-	
+Supporting the following constants: 
+
+```javascript
+CONTENT_MODE_SCALE_TO_FIT
+CONTENT_MODE_ASPECT_FIT
+CONTENT_MODE_ASPECT_FILL
+CONTENT_MODE_REDRAW
+CONTENT_MODE_CENTER
+CONTENT_MODE_TOP
+CONTENT_MODE_BOTTOM
+CONTENT_MODE_LEFT
+CONTENT_MODE_RIGHT
+CONTENT_MODE_TOP_LEFT
+CONTENT_MODE_TOP_RIGHT
+CONTENT_MODE_BOTTOM_LEFT
+CONTENT_MODE_BOTTOM_RIGHT
+```
 
 ## Example usage
 ```javascript
@@ -26,14 +45,39 @@ var NappImageView = require('dk.napp.imageview');
 var imageView = NappImageView.createImageView({
 	height : "160dp",
 	width : "320dp",
-	contentMode : 'aspectfill',
+	contentMode : NappImageView.CONTENT_MODE_ASPECT_FILL,
 	image : "http://designtoimprovelife.dk/wp-content/uploads/2011/03/nyhavn.jpg"
+});
+win.add(imageView);
+```
+
+### Another example
+
+Using a local image path
+
+```javascript
+var NappImageView = require('dk.napp.imageview');
+
+var imageView = NappImageView.createImageView({
+	height : Ti.UI.FILL,
+	width : Ti.UI.FILL,
+	contentMode : 'aspectfit',
+	image : "/images/background.png"
 });
 win.add(imageView);
 ```
 
 
 ## Changelog
+
+**v1.1.0**
+Added support for the missing `UIViewContentMode` constants and support for default images.
+
+**v1.0.2**
+Added support for local image path 
+
+**v1.0.1**
+Added 64 bit support  
  
 **v1.0**
 Initial implementation. 

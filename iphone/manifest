@@ -2,13 +2,13 @@
 # this is your module manifest and used by Titanium
 # during compilation, packaging, distribution, etc.
 #
-version: 1.0.1
+version: 1.1.0
 apiversion: 2
 architectures: armv7 i386 x86_64 arm64
 description: NappImageView
-author: Your Name
-license: Specify your license
-copyright: Copyright (c) 2014 by Your Company
+author: Mads Moller
+license: MIT
+copyright: Copyright (c) 2014 by Napp
 
 # these should not be edited
 name: NappImageView
